@@ -3,7 +3,7 @@
  * All fetch calls live here. No fetch() scattered in other files.
  */
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://api.watt-watch.app';
 
 /**
  * Generic request helper with error handling.
