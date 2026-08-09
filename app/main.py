@@ -9,10 +9,8 @@ from config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Lifespan started!")
 
     async with engine.begin() as conn:
-        print(Base.metadata.tables.keys())
         await conn.run_sync(Base.metadata.create_all)
 
     yield
@@ -32,6 +30,11 @@ app.include_router(meters.router, tags=["meters"])
 app.include_router(readings.router, tags =["readings"])
 app.include_router(billing_period.router, tags =["billing_periods"])
 
+
+
+@app.get("/debug/cors")
+async def debug_cors():
+    return {"cors_origins": settings.cors_origins, "env": settings.env}
 
 @app.get("/health/db")
 async def check_db(db: DBSession):
