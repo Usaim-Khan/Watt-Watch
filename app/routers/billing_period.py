@@ -20,10 +20,13 @@ from database import DBSession
 
 def ensure_25_days_passed(m: Meter):
 
+    if m.last_reading_date is None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail=f"Meter {m.name} ({m.code}) has not been initialized.")
+
     if datetime.now(timezone.utc) -  m.last_reading_date < timedelta(days=25):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail= f"month is reset after atleast 25 days. Last rest was: {m.last_reading_date.strftime("%d %B %Y")}")
-
-
+    
 router = APIRouter(prefix='/period')
 
 @router.post('/end-month', status_code=status.HTTP_204_NO_CONTENT)
