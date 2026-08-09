@@ -10,7 +10,8 @@ from schemas import (
     MeterUpdate
 )
 from models import (
-    Meter
+    Meter,
+    Reading
 )
 
 from database import DBSession
@@ -94,6 +95,12 @@ async def init_meter(meter_id: Annotated[int, Path(gt=0)], meter: MeterUpdate, d
                             detail="meter already initialized")
     existing_meter.last_reading_date = meter.last_reading_date
     existing_meter.last_reading = meter.last_reading
+
+    new_reading = Reading(
+        meter_id=meter_id,
+        reading=meter.last_reading,
+        recorded_at=meter.last_reading_date
+    )
 
     await db.commit()
     await db.refresh(existing_meter)
