@@ -3,7 +3,9 @@
  * All fetch calls live here. No fetch() scattered in other files.
  */
 
-const API_BASE = 'https://api.watt-watch.app';
+const API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+    ? 'http://localhost:8000'
+    : 'https://api.watt-watch.app';
 
 /**
  * Generic request helper with error handling.
@@ -123,5 +125,3 @@ export async function deleteMeter(meterId) {
         method: 'DELETE',
     });
 }
-
-

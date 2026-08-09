@@ -2,17 +2,10 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_asyn
 from sqlalchemy.orm import DeclarativeBase 
 from fastapi import Depends
 from typing import Annotated
-
-from dotenv import load_dotenv
-import os
+from config import settings
 
 
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
-if DATABASE_URL is None:
-    raise ValueError("DATABASE_URL is not set. Did you forget to create a .env file?")
-
-engine = create_async_engine(DATABASE_URL)
+engine = create_async_engine(settings.database_url)
 
 AsyncSessionLocal = async_sessionmaker(engine,
                                        class_=AsyncSession,

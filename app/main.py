@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from database import engine, Base, DBSession
 from models import *
 from sqlalchemy import text
+from config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,12 +23,11 @@ app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://watt-watch.app", "https://www.watt-watch.app"],
-    allow_credentials=True,
+    allow_origins=settings.cors_origins,
+    allow_credentials=settings.env != "development",
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 app.include_router(meters.router, tags=["meters"])
 app.include_router(readings.router, tags =["readings"])
 app.include_router(billing_period.router, tags =["billing_periods"])
