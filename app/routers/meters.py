@@ -102,6 +102,7 @@ async def init_meter(meter_id: Annotated[int, Path(gt=0)], meter: MeterUpdate, d
         recorded_at=meter.last_reading_date
     )
 
+    db.add(new_reading)
     await db.commit()
     await db.refresh(existing_meter)
 
