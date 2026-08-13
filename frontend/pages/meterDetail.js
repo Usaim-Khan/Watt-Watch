@@ -26,7 +26,7 @@ export async function renderMeterDetail(params) {
     try {
         const [meter, readings] = await Promise.all([
             getMeter(meterId),
-            getReadings(meterId),
+            getReadings(meterId, 20),
         ]);
 
         renderPage(meter, readings);

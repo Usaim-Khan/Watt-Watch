@@ -99,7 +99,7 @@ async function loadMeters() {
         const metersWithUsage = await Promise.all(meters.map(async (meter) => {
             if (meter.last_reading === null) return { ...meter, _latestReading: null };
             try {
-                const readings = await getReadings(meter.id);
+                const readings = await getReadings(meter.id, 1);
                 const latest = readings.length > 0 ? readings[0] : null;
                 return { ...meter, _latestReading: latest };
             } catch {

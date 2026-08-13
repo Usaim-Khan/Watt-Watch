@@ -88,8 +88,9 @@ export async function initMeter(id, { last_reading, last_reading_date }) {
    ============================================ */
 
 /** Get readings for a specific meter */
-export async function getReadings(meterId) {
-    return request(`/readings/${meterId}`);
+export async function getReadings(meterId, limit = null) {
+    const url = limit ? `/meters/${meterId}/readings?limit=${limit}` : `/meters/${meterId}/readings`;
+    return request(url);
 }
 
 /** Create a new reading */
