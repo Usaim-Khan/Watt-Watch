@@ -50,36 +50,6 @@ async def all_readings(db:DBSession, limit: Annotated[int, Query(gt=0)] = 5):
     return result
 
 
-@router.get('/{meter_id}', response_model=list[ReadingResponse])
-async def meter_reading(db:DBSession,
-                        meter_id: Annotated[int, Path(gt=0)],
-                        start_date : Annotated[date|None, Query()] = None, end_date: Annotated[date|None, Query()] = None):
-
-    
-    q = select(Meter).where(Meter.id == meter_id)
-    result = await db.execute(q)
-    existing_meter = result.scalar_one_or_none()
-    if not existing_meter:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail="meter not found")
-
-
-    if start_date and end_date and start_date > end_date:
-        raise HTTPException(
-            status_code=400,
-            detail="start_date must be before end_date"
-        )
-    q = select(Reading).where(Reading.meter_id == meter_id).order_by(Reading.recorded_at.desc())
-
-    if start_date:
-        q = q.where(Reading.recorded_at >= start_date)
-    if end_date:
-        q = q.where(Reading.recorded_at <= end_date)
-
-    readings = await db.execute(q)
-    readings = readings.scalars().all()
-    return readings
-
 
 
 

@@ -1,13 +1,14 @@
-from fastapi import APIRouter, status, HTTPException, Path
+from fastapi import APIRouter, status, HTTPException, Path, Query
 from sqlalchemy import select
 from typing import Annotated
-from datetime import timedelta
+from datetime import date
 
 from schemas import (
     MeterResponse,
     MeterCreate,
     MeterRename,
-    MeterUpdate
+    MeterUpdate,
+    ReadingResponse
 )
 from models import (
     Meter,
@@ -41,7 +42,7 @@ async def get_meters(db: DBSession):
     return result.scalars().all()
 
 @router.get('/{meter_id}', response_model=MeterResponse)
-async def get_meter(meter_id: int, db: DBSession):
+async def get_one_meter(meter_id: int, db: DBSession):
     result = await db.execute(select(Meter).where(Meter.id == meter_id))
     meter = result.scalar_one_or_none()
     if not meter:
@@ -120,3 +121,29 @@ async def delete_meter(meter_id: Annotated[int, Path(gt=0)], db:DBSession):
     
     await db.delete(existing_meter)
     await db.commit()
+
+
+
+@router.get('/{meter_id}/readings', response_model=list[ReadingResponse])
+async def get_meter_reading(db:DBSession,
+                        meter_id: Annotated[int, Path(gt=0)],
+                        limit: Annotated[int|None, Query(gt=0)] = None):
+
+    
+    q = select(Meter).where(Meter.id == meter_id)
+    result = await db.execute(q)
+    existing_meter = result.scalar_one_or_none()
+    if not existing_meter:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail="meter not found")
+
+
+    q = select(Reading).where(Reading.meter_id == meter_id).order_by(Reading.recorded_at.desc())
+
+    if limit:
+        q = q.limit(limit)
+                                                                     
+    readings = await db.execute(q)
+    readings = readings.scalars().all()
+    return readings
+
