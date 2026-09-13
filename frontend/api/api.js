@@ -5,7 +5,7 @@
 
 const API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
     ? 'http://localhost:8000'
-    : 'https://api.watt-watch.app';
+    : 'https://watt-watch-cwh4.onrender.com';
 
 /**
  * Generic request helper with error handling.
